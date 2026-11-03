@@ -30,4 +30,13 @@ button{background:var(--gold)}button.secondary{background:#2b3b46}
 .intake-bottom strong{font-size:11px;font-weight:750}.intake-tile.over .intake-bottom strong{color:#ffaaaa}.intake-tile.under .intake-bottom strong{color:#f0c986}.intake-tile.ok .intake-bottom strong{color:#9ee2bd}
 .intake-dashboard>.note{margin:15px 0 0;font-size:11px}
 @media(max-width:360px){.intake-grid{gap:7px}.intake-tile{padding:10px 8px}.intake-value{font-size:23px}.intake-value span{font-size:10px}}
-</style></head><body><header><div class="eyebrow">PERSONAL PERFORMANCE SYSTEM · FINAL</div><h1>MISSION <span class="gold">REACHER</span></h1><div class="muted" id="today"></div></header><main id="app"></main><nav class="nav" id="nav"></nav><script src="app.js?v=pfc-dashboard-2026-11-2"></script></body></html>
+/* Compact in-page food search: prevents macOS/iOS native select covering the screen */
+.chosen-food{border:1px solid #56646d;background:#22323c;border-radius:11px;padding:13px;color:#f3e0bb;font-weight:700;min-height:46px}
+.food-picker-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.food-picker-actions button{flex:1;min-width:110px;font-size:12px;min-height:40px;padding:9px}
+.food-results{max-height:260px;overflow-y:auto;overscroll-behavior:contain;border:1px solid #4b5b64;border-radius:12px;background:#17252e;margin-top:8px}
+.food-result{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;width:100%;border:0;border-bottom:1px solid #31424c;background:transparent;color:#f5f5f2;padding:12px 13px;min-height:49px;border-radius:0;font-size:14px;font-weight:500}
+.food-result:last-child{border-bottom:0}.food-result:hover,.food-result:focus-visible{background:#2d404a}
+.food-result small{white-space:nowrap;font-size:10px;color:#afbdc5}
+@media(max-width:430px){.food-result small{white-space:normal;text-align:right;max-width:110px}}
+</style></head><body><header><div class="eyebrow">PERSONAL PERFORMANCE SYSTEM · FINAL</div><h1>MISSION <span class="gold">REACHER</span></h1><div class="muted" id="today"></div></header><main id="app"></main><nav class="nav" id="nav"></nav><script src="app.js?v=food-picker-fix-2026-11-3"></script></body></html>
