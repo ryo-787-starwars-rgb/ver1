@@ -1,17 +1,16 @@
-# MISSION REACHER v2.2 — BODY SIMULATOR
+# MISSION REACHER — FINAL (BODY SIMULATORなし)
 
-GitHub Pages対応の静的PWA。既存の `mission-reacher-v2` localStorage キーを維持します。
+## 内容
+- TRAIN: SIGNATURE PROGRAMS（UPPER STRENGTHなど曜日固定なし）、部位別7カテゴリー×5プラン、COMBINATION、CUSTOM、代替種目、セット記録
+- STATS: 身体測定と種目別成長グラフ
+- GOALS: 最終目標、短期目標、データに基づく到達時期の簡易予測
+- FOOD: 減量・維持・増量別PFC提案。登録済み食材は摂取量だけで自動計算。自由入力は1食分のPFCを直接入力
+- DATA: JSONバックアップ・復元
+- BODY SIMULATORと食費管理は削除
 
-## 更新
-1. 旧アプリ DATA からJSONバックアップを書き出す。
-2. このフォルダの6ファイルをGitHubリポジトリのルートにアップロードし、同名ファイルを上書きする。
-3. GitHub Pagesのデプロイ完了後、iPhoneでページを再読み込み。古い表示の場合はSafariの再読み込み・ホーム画面アプリの再起動を試す。
+## 更新方法
+1. 旧アプリのDATAからJSONを書き出して保存。
+2. このZIPを解凍し、6ファイルをGitHub Pagesの既存リポジトリ直下にアップロードして同名ファイルを上書き。
+3. Commit changes後、公開を待ってSafariで再読み込み。
 
-## 追加内容
-- BODYタブ：イラスト調人体シミュレーター（正面・側面・背面）
-- CURRENT / TARGET / FUTURE、現在と目標の並列比較
-- 胸・肩・背中・腕・脚・体脂肪率の調整、STATS測定値との連動
-- SIGNATURE PROGRAMS：曜日と「軍人仕様」の表示を削除。4プログラムの内容は維持。
-- BODY PART、COMBINATION、CUSTOM、食事・PFC、成長グラフ、目標、JSONバックアップは維持。
-
-**注意**：モデルは模式図であり、実測の体型や将来の姿を精密に推定するものではありません。FUTUREは十分な体脂肪率記録がある場合のみ単純傾向を反映します。
+保存キー `mission-reacher-v2` を維持しています。過去のBODY SIMULATOR設定は既存保存データに残る場合がありますが、画面には表示しません。記録は端末のブラウザ内に保存されます。iPhone実機テストは未実施です。
