@@ -1,16 +1,21 @@
-# MISSION REACHER — FINAL (BODY SIMULATORなし)
+# MISSION REACHER — COMPLETE (2026-11)
 
-## 内容
-- TRAIN: SIGNATURE PROGRAMS（UPPER STRENGTHなど曜日固定なし）、部位別7カテゴリー×5プラン、COMBINATION、CUSTOM、代替種目、セット記録
-- STATS: 身体測定と種目別成長グラフ
-- GOALS: 最終目標、短期目標、データに基づく到達時期の簡易予測
-- FOOD: 減量・維持・増量別PFC提案。登録済み食材は摂取量だけで自動計算。自由入力は1食分のPFCを直接入力
-- DATA: JSONバックアップ・復元
-- BODY SIMULATORと食費管理は削除
+GitHub Pages (`ver1`) 用PWA。ZIP内のファイルをリポジトリのルートへ上書きしてください。
 
-## 更新方法
-1. 旧アプリのDATAからJSONを書き出して保存。
-2. このZIPを解凍し、6ファイルをGitHub Pagesの既存リポジトリ直下にアップロードして同名ファイルを上書き。
-3. Commit changes後、公開を待ってSafariで再読み込み。
+## 更新前に必ずバックアップ
+旧アプリ → DATA → JSON書き出し → `.json` を保存。ZIP解凍後のファイルをGitHubへアップロードしてコミット。新アプリで記録が見えない場合は DATA → JSON復元。復元は現在のデータを置き換えるので、先に現在のデータも書き出してください。
 
-保存キー `mission-reacher-v2` を維持しています。過去のBODY SIMULATOR設定は既存保存データに残る場合がありますが、画面には表示しません。記録は端末のブラウザ内に保存されます。iPhone実機テストは未実施です。
+## 主な機能
+- TRAIN: 7部位×8プラン、組み合わせ、4種のSIGNATURE、自由入力・代替種目、セットログ
+- FOOD: 100種類以上の食材検索、卵は個、納豆はパック、食パンは枚、牛乳はmL、その他はg。プロテイン粉末は1杯のPFC/kcalと杯数
+- STATS: 朝体重（推奨）・夜体重（任意）・朝7日移動平均・その他身体測定、種目別推移
+- GOALS: 体重の予測は朝7日移動平均を使用。データ不足時は予測準備中
+- DATA: JSONエクスポート・インポート
+- BODY SIMULATOR・食費管理UIなし。記録はブラウザのlocalStorageに保存
+
+### 注意
+食材の栄養値や個数換算は概算。卵は可食部50g/個、納豆45g/パック、食パン60g/枚、牛乳は1mL≈1g。商品ラベルを優先してください。iPhone実機検証は未実施です。
+
+
+## PFC dashboard update
+FOOD画面に日別の目標との差・不足・超過・達成表示を追加。目標は既存の体重・活動量・減量/維持/増量設定から計算。既存のlocalStorageキーとJSONバックアップ形式を維持。
