@@ -79,4 +79,52 @@ button{background:var(--gold)}button.secondary{background:#2b3b46}
 .food-history-card .exercise{align-items:flex-start}.food-history-card .exercise>div:first-child{flex:1;min-width:0}
 .food-message:not(:empty){padding:9px 12px;background:#59412a;border:1px solid #9b794e;border-radius:9px}
 @media(max-width:430px){.food-entry-card .food-picker-actions button{min-width:calc(50% - 7px)}.food-entry-card .food-submit{position:relative}.food-history-card .food-history-actions button{min-width:43px}}
-</style></head><body><header><div class="eyebrow">PERSONAL PERFORMANCE SYSTEM</div><h1><span class="gold">ATLAS</span></h1><div class="muted" id="today"></div></header><main id="app"></main><nav class="nav" id="nav"></nav><script src="app.js?v=atlas-20261105-verified3"></script></body></html>
+
+/* ATLAS FOOD / mobile-first dashboard + quick-entry, 2026-11-06 */
+html,body{max-width:100%;overflow-x:clip}
+#app,#app>.card{min-width:0;max-width:100%}
+#app .card,#app .card *{box-sizing:border-box}
+.food-entry-card,.food-history-card,.intake-dashboard{width:100%;min-width:0;max-width:100%}
+.food-entry-card .stack,.food-entry-card .stack>div,.food-entry-card form,.food-entry-card #foodForm>div{min-width:0;max-width:100%}
+.food-entry-card .row{min-width:0;max-width:100%}
+.food-entry-card #foodSearch,.food-entry-card #foodChosen,.food-entry-card #gramsField,.food-entry-card input,.food-entry-card select{min-width:0;max-width:100%}
+.food-entry-card #foodChosen{flex:1 1 0!important;width:0;overflow-wrap:anywhere;min-width:0}
+.food-entry-card #favoriteFood{flex:0 0 47px;width:47px;min-width:47px;padding:9px 0}
+.food-entry-card .food-genres{display:flex;min-width:0;max-width:100%;width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-inline:contain;padding:10px 0}
+.food-entry-card .food-genres button{flex:0 0 auto;white-space:nowrap;min-width:max-content;max-width:none}
+.food-entry-card .food-picker-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;min-width:0}
+.food-entry-card .food-picker-actions button{min-width:0!important;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.3;min-height:42px;font-size:12px;padding:8px 6px}
+.food-entry-card #showAllFood{grid-column:1/-1}
+.food-entry-card .food-results{min-width:0;max-width:100%;width:100%;overflow-x:hidden}
+.food-entry-card .food-result{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.food-entry-card .food-result>span{min-width:0;overflow-wrap:anywhere}
+.food-entry-card .food-result small{flex:0 0 auto;max-width:100px;white-space:normal}
+.food-entry-card .intake-date{margin:10px 0 14px}
+.food-entry-card h2{font-size:22px}
+.food-entry-card .food-submit{max-width:100%}
+.food-history-card>.row{gap:8px;align-items:flex-start;flex-wrap:wrap}
+.food-history-card>.row h3{flex:1 1 170px;min-width:0;overflow-wrap:anywhere}
+.food-history-card .food-copy{flex:0 1 auto;max-width:100%}
+.intake-dashboard{padding:16px}
+.intake-dashboard .intake-header{gap:8px;align-items:flex-start;min-width:0}
+.intake-dashboard .intake-header>div{flex:1;min-width:0}
+.intake-dashboard .intake-header h2{font-size:21px;line-height:1.35;overflow-wrap:anywhere}
+.intake-dashboard .intake-summary{line-height:1.5;margin:12px 0}
+.intake-dashboard .intake-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+.intake-dashboard .intake-tile{width:100%;min-width:0;padding:13px 14px;background:#22323d}
+.intake-dashboard .intake-name{margin:5px 0 3px}
+.intake-dashboard .intake-value{font-size:24px;overflow-wrap:anywhere}
+.intake-dashboard .intake-value span{font-size:12px;color:#bdccd5}
+.intake-dashboard .intake-track{height:9px;margin:11px 0 9px}
+.intake-dashboard .intake-bottom{font-size:12px}
+.intake-dashboard .intake-bottom strong{font-size:12px}
+.intake-dashboard .intake-tile.under .intake-fill{background:#81ade0}
+.intake-dashboard .intake-tile.under .intake-bottom strong{color:#9fc7f3}
+.intake-dashboard .intake-tile.under .status-pill{color:#a7ccf6;background:#7fb3e81c}
+.intake-dashboard .intake-tile.over .intake-fill{background:#e99880}
+.intake-dashboard .intake-tile.over .intake-bottom strong{color:#ffb8a6}
+.intake-dashboard .intake-tile.ok .intake-fill{background:#7abda5}
+.intake-dashboard .intake-tile.ok .intake-bottom strong{color:#9bdfc3}
+@media(min-width:660px){.intake-dashboard .intake-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intake-dashboard .intake-tile:first-child{grid-column:1/-1}}
+@media(max-width:390px){.intake-dashboard{padding:13px}.intake-dashboard .intake-tile{padding:12px}.intake-dashboard .intake-value{font-size:22px}.food-entry-card h2{font-size:21px}}
+</style></head><body><header><div class="eyebrow">PERSONAL PERFORMANCE SYSTEM</div><h1><span class="gold">ATLAS</span></h1><div class="muted" id="today"></div></header><main id="app"></main><nav class="nav" id="nav"></nav><script src="app.js?v=atlas-20261106-food-dashboard"></script></body></html>
