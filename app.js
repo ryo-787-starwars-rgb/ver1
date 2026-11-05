@@ -175,7 +175,53 @@ function atlasConfirm(message){return new Promise(resolve=>{
 })}
 function appSheet(title,content,onReady){let overlay=$('#atlasOverlay');if(!overlay){overlay=document.createElement('div');overlay.id='atlasOverlay';document.body.append(overlay)}overlay.innerHTML=`<div class="atlas-shade" data-sheet-close></div><div class="atlas-sheet" role="dialog" aria-modal="true"><div class="row"><h3>${esc(title)}</h3><button class="secondary" data-sheet-close>閉じる</button></div>${content}</div>`;overlay.style.display='block';overlay.querySelectorAll('[data-sheet-close]').forEach(b=>b.onclick=async()=>{overlay.style.display='none'});onReady?.(overlay);}
 function chooseExercise(title,exclude,onPick){let cat=exercisePickerCategory,query='';function draw(){appSheet(title,`<input id="exSearch" placeholder="種目を検索" value="${esc(query)}"><div class="atlas-tabs"><button class="secondary ${exercisePickerMode==='お気に入り'?'selected':''}" data-exmode="お気に入り">★ お気に入り</button><button class="secondary ${exercisePickerMode==='最近'?'selected':''}" data-exmode="最近">最近</button>${Object.keys(groups).map(a=>`<button class="secondary ${cat===a?'selected':''}" data-cat="${esc(a)}">${esc(a)}</button>`).join('')}</div><div class="atlas-choices">${(query?allExercises:exercisePickerMode==='お気に入り'?(db.settings.exerciseFavorites||[]):exercisePickerMode==='最近'?[...new Set(db.sessions.slice().reverse().flatMap(s=>s.sets.map(x=>x.exercise)))].slice(0,35):groups[cat]).filter(x=>x!==exclude&&x.includes(query)).map(x=>`<div class="atlas-choice-row"><button class="atlas-choice" data-pick="${esc(x)}">${esc(x)} <span>＋</span></button><button class="secondary" data-exfav="${esc(x)}">${(db.settings.exerciseFavorites||[]).includes(x)?'★':'☆'}</button></div>`).join('')||'<p class="note">該当する種目がありません</p>'}</div><div class="row"><input id="customEx" placeholder="独自の種目名を入力"><button id="customPick" class="secondary">追加</button></div>`,o=>{o.querySelector('#exSearch').oninput=e=>{query=e.target.value;draw();o.querySelector('#exSearch').focus()};o.querySelectorAll('[data-cat]').forEach(b=>b.onclick=async()=>{cat=b.dataset.cat;exercisePickerCategory=cat;exercisePickerMode='部位';draw()});o.querySelectorAll('[data-exmode]').forEach(b=>b.onclick=async()=>{exercisePickerMode=b.dataset.exmode;draw()});o.querySelectorAll('[data-exfav]').forEach(b=>b.onclick=async()=>{const name=b.dataset.exfav;let f=db.settings.exerciseFavorites||[];db.settings.exerciseFavorites=f.includes(name)?f.filter(x=>x!==name):[...f,name];save();draw()});o.querySelectorAll('[data-pick]').forEach(b=>b.onclick=async()=>{o.style.display='none';onPick(b.dataset.pick)});o.querySelector('#customPick').onclick=async()=>{const v=o.querySelector('#customEx').value.trim();if(v){o.style.display='none';onPick(v)}}})}draw()}
-function pairEditor(session,name){const choices=orderedExercises(session).filter(x=>x!==name&&!session.pairGroups?.some(g=>g.names.includes(x)));appSheet('セットを組み合わせる',`<label>方式</label><select id="pairType"><option value="super">スーパーセット（異なる筋群）</option><option value="compound">コンパウンドセット（同じ筋群）</option></select><label>組み合わせる種目</label><select id="pairOther">${choices.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</select><label>ラウンド数（各種目のセット数に合わせてください）</label><select id="pairRounds"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select><label>ラウンド間の休憩（秒）</label><select id="pairRest"><option>60</option><option selected>90</option><option>120</option><option>180</option></select><button id="pairSave" ${choices.length?'':'disabled'}>組み合わせる</button>`,o=>{o.querySelector('#pairSave').onclick=async()=>{const other=o.querySelector('#pairOther').value;if(!other)return;session.pairGroups=session.pairGroups||[];session.pairGroups=session.pairGroups.filter(g=>!g.names.includes(name));session.pairGroups.push({id:'pair'+Date.now(),type:o.querySelector('#pairType').value,names:[name,other],rounds:Number(o.querySelector('#pairRounds').value),rest:Number(o.querySelector('#pairRest').value)});const order=orderedExercises(session);const first=order.indexOf(name),second=order.indexOf(other);if(second!==first+1){order.splice(second,1);order.splice(order.indexOf(name)+1,0,other)}session.exerciseOrder=order;save();o.style.display='none';drawActive()}})}
+function pairEditor(session,name){
+  const existing=session.pairGroups?.find(g=>g.names.includes(name));
+  const currentType=existing?.type||'super';
+  const names=orderedExercises(session);
+  const available=names.filter(x=>x!==name&&!session.pairGroups?.some(g=>g.names.includes(x)&&g!==existing));
+  const areasOf=x=>Object.keys(groups).filter(a=>groups[a].some(n=>canonicalExercise(n)===canonicalExercise(x)));
+  const firstAreas=areasOf(name);
+  const validFor=type=>available.filter(x=>{const otherAreas=areasOf(x);if(!firstAreas.length||!otherAreas.length)return true;const same=otherAreas.some(a=>firstAreas.includes(a));return type==='compound'?same:!same});
+  const setCount=x=>session.sets.filter(v=>v.exercise===x&&!v.warmup).length;
+  function draw(type=currentType,selected=existing?.names.find(n=>n!==name)||''){
+    const options=validFor(type);
+    if(!options.includes(selected))selected=options[0]||'';
+    const suggested=Math.max(1,Math.min(8,Math.min(setCount(name),setCount(selected)||setCount(name))));
+    appSheet('種目を組み合わせる',`<div class="atlas-pair-setup">
+      <div class="atlas-pair-source"><small>種目 A1</small><strong>${esc(name)}</strong></div>
+      <label>組み合わせ方式</label>
+      <div class="atlas-pair-types" role="group" aria-label="組み合わせ方式">
+        <button type="button" class="${type==='super'?'chosen':''}" data-pairtype="super" aria-pressed="${type==='super'}"><b>スーパーセット</b><small>異なる部位の2種目</small></button>
+        <button type="button" class="${type==='compound'?'chosen':''}" data-pairtype="compound" aria-pressed="${type==='compound'}"><b>コンパウンドセット</b><small>同じ部位の2種目</small></button>
+      </div>
+      <label for="pairOther">組み合わせる種目 A2</label>
+      ${options.length?`<select id="pairOther">${options.map(x=>`<option value="${esc(x)}" ${x===selected?'selected':''}>${esc(x)}</option>`).join('')}</select>`:`<p class="atlas-pair-empty">${type==='super'?'別の部位':'同じ部位'}の種目がありません。今日のメニューに種目を追加してください。</p>`}
+      <div class="atlas-pair-numbers"><div><label for="pairRounds">ラウンド数</label><select id="pairRounds">${[1,2,3,4,5,6,7,8].map(n=>`<option value="${n}" ${n===(existing?.rounds||suggested)?'selected':''}>${n}ラウンド</option>`).join('')}</select></div>
+      <div><label for="pairRest">ラウンド間の休憩</label><select id="pairRest">${[30,45,60,90,120,150,180,240].map(n=>`<option value="${n}" ${n===(existing?.rest||90)?'selected':''}>${n}秒</option>`).join('')}</select></div></div>
+      <p class="note">A1 → A2 → 休憩の順に実施。重量・回数・RIRはそれぞれの種目で記録します。</p>
+      <button type="button" class="atlas-pair-submit" id="pairSave" ${options.length?'':'disabled'}>この2種目を組み合わせる</button>
+    </div>`,o=>{
+      o.querySelectorAll('[data-pairtype]').forEach(b=>b.onclick=()=>draw(b.dataset.pairtype,''));
+      const partner=o.querySelector('#pairOther');
+      if(!partner)return;
+      o.querySelector('#pairSave').onclick=()=>{
+        const other=partner.value;
+        if(!other||other===name){atlasNotice('組み合わせる種目を選択してください');return}
+        const typeChoice=o.querySelector('[data-pairtype][aria-pressed="true"]').dataset.pairtype;
+        const count=Number(o.querySelector('#pairRounds').value),rest=Number(o.querySelector('#pairRest').value);
+        if(setCount(name)<count||setCount(other)<count){atlasNotice('先に各種目のセット数をラウンド数以上にしてください');return}
+        session.pairGroups=(session.pairGroups||[]).filter(g=>!g.names.includes(name)&&!g.names.includes(other));
+        session.pairGroups.push({id:existing?.id||'pair'+Date.now(),type:typeChoice,names:[name,other],rounds:count,rest});
+        const order=orderedExercises(session);
+        const idx=order.indexOf(other);if(idx>=0)order.splice(idx,1);
+        order.splice(order.indexOf(name)+1,0,other);session.exerciseOrder=order;
+        save();o.style.display='none';drawActive();atlasNotice('組み合わせを保存しました');
+      };
+    });
+  }
+  draw();
+}
 function drawActive(){
  const s=db.sessions.find(x=>x.id===active);
  if(!s){$('#active').innerHTML='<div class="empty">プランを選んで開始してください</div>';return}
@@ -202,7 +248,7 @@ function drawActive(){
  $$('[data-down]').forEach(b=>b.onclick=async()=>{const i=Number(b.dataset.down);if(i>=s.exerciseOrder.length-1)return;[s.exerciseOrder[i+1],s.exerciseOrder[i]]=[s.exerciseOrder[i],s.exerciseOrder[i+1]];save();drawActive()});
  $$('[data-apply]').forEach(b=>b.onclick=async()=>{const name=b.dataset.apply,v=exerciseSuggestion(name,s.id);if(!await atlasConfirm(name+' の未完了セットを推奨値に更新しますか？ 完了済みセットは保持します。'))return;const existing=s.sets.filter(x=>x.exercise===name);let unfinished=existing.filter(x=>!x.done);while(unfinished.length<v.count){const x={exercise:name,weight:v.weight||'',reps:v.reps,rir:'',done:false,rest:existing[0]?.rest||90};s.sets.push(x);unfinished.push(x)}while(unfinished.length>v.count){const x=unfinished.pop();s.sets.splice(s.sets.indexOf(x),1)}unfinished.forEach(x=>{x.weight=v.weight||'';x.reps=v.reps});save();drawActive()});
  $$('[data-addset]').forEach(b=>b.onclick=async()=>{const x=s.sets.find(x=>x.exercise===b.dataset.addset);s.sets.push({...x,weight:'',reps:'',rir:'',done:false});save();drawActive()});
- $$('[data-options]').forEach(b=>b.onclick=async()=>{const name=b.dataset.options,paired=s.pairGroups.find(g=>g.names.includes(name));appSheet(name+' · オプション',`<div class="atlas-menu"><button id="optReplace">種目を変更</button><button id="optPair">スーパーセット / コンパウンドセット</button>${paired?'<button id="optUnpair">組み合わせを解除</button>':''}<button id="optRemove" class="danger">種目を削除</button></div>`,o=>{o.querySelector('#optReplace').onclick=async()=>{o.style.display='none';chooseExercise('種目を変更',name,v=>{if(v===name)return;s.sets.forEach(x=>{if(x.exercise===name)x.exercise=v});s.exerciseOrder=s.exerciseOrder.map(x=>x===name?v:x);s.pairGroups.forEach(g=>g.names=g.names.map(x=>x===name?v:x));syncExerciseOrder(s);drawActive()})};o.querySelector('#optPair').onclick=async()=>pairEditor(s,name);if(paired)o.querySelector('#optUnpair').onclick=async()=>{s.pairGroups=s.pairGroups.filter(g=>g!==paired);save();o.style.display='none';drawActive()};o.querySelector('#optRemove').onclick=async()=>{s.sets=s.sets.filter(x=>x.exercise!==name);s.pairGroups=s.pairGroups.filter(g=>!g.names.includes(name));syncExerciseOrder(s);o.style.display='none';drawActive()}})});
+ $$('[data-options]').forEach(b=>b.onclick=async()=>{const name=b.dataset.options,paired=s.pairGroups.find(g=>g.names.includes(name));appSheet(name+' · オプション',`<div class="atlas-menu"><button id="optReplace">種目を変更</button><button id="optPair">2種目を組み合わせる <span class="atlas-menu-sub">スーパーセット・コンパウンドセット</span></button>${paired?'<button id="optUnpair">組み合わせを解除</button>':''}<button id="optRemove" class="danger">種目を削除</button></div>`,o=>{o.querySelector('#optReplace').onclick=async()=>{o.style.display='none';chooseExercise('種目を変更',name,v=>{if(v===name)return;s.sets.forEach(x=>{if(x.exercise===name)x.exercise=v});s.exerciseOrder=s.exerciseOrder.map(x=>x===name?v:x);s.pairGroups.forEach(g=>g.names=g.names.map(x=>x===name?v:x));syncExerciseOrder(s);drawActive()})};o.querySelector('#optPair').onclick=async()=>pairEditor(s,name);if(paired)o.querySelector('#optUnpair').onclick=async()=>{s.pairGroups=s.pairGroups.filter(g=>g!==paired);save();o.style.display='none';drawActive()};o.querySelector('#optRemove').onclick=async()=>{s.sets=s.sets.filter(x=>x.exercise!==name);s.pairGroups=s.pairGroups.filter(g=>!g.names.includes(name));syncExerciseOrder(s);o.style.display='none';drawActive()}})});
  $('#addExercise').onclick=async()=>chooseExercise('種目を追加','',name=>{if(names.includes(name))return;const r=exerciseSuggestion(name,s.id);s.sets.push(...Array.from({length:r.count},()=>({exercise:name,weight:'',reps:'',rir:'',done:false,rest:90})));s.exerciseOrder.push(name);save();drawActive()});
  $$('[data-setoptions]').forEach(b=>b.onclick=async()=>{const name=b.dataset.setoptions;const indices=s.sets.map((x,i)=>x.exercise===name?i:-1).filter(i=>i>=0);appSheet('セットを削除',`<div class="atlas-menu">${indices.map((idx,j)=>`<button data-remove-set="${idx}">セット ${j+1} を削除</button>`).join('')}</div>`,o=>o.querySelectorAll('[data-remove-set]').forEach(btn=>btn.onclick=async()=>{if(indices.length===1){s.sets=s.sets.filter(x=>x.exercise!==name)}else s.sets.splice(Number(btn.dataset.removeSet),1);syncExerciseOrder(s);o.style.display='none';drawActive()}))});
  $$('[data-rest]').forEach(b=>b.onclick=async()=>timer(Number(b.dataset.rest)));

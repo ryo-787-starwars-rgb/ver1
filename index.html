@@ -127,4 +127,28 @@ html,body{max-width:100%;overflow-x:clip}
 .intake-dashboard .intake-tile.ok .intake-bottom strong{color:#9bdfc3}
 @media(min-width:660px){.intake-dashboard .intake-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.intake-dashboard .intake-tile:first-child{grid-column:1/-1}}
 @media(max-width:390px){.intake-dashboard{padding:13px}.intake-dashboard .intake-tile{padding:12px}.intake-dashboard .intake-value{font-size:22px}.food-entry-card h2{font-size:21px}}
+
+/* Proper modal sheet (previously missing, causing options to render at page bottom) */
+#atlasOverlay{position:fixed!important;inset:0!important;z-index:9999!important;display:none;overflow:hidden;overscroll-behavior:contain}
+#atlasOverlay .atlas-shade{position:absolute;inset:0;background:rgba(2,8,13,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+#atlasOverlay .atlas-sheet{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:min(86dvh,740px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:18px 18px calc(22px + env(safe-area-inset-bottom));border:1px solid #596b76;border-bottom:0;border-radius:20px 20px 0 0;background:#192a35;color:#f2f5f6;box-shadow:0 -18px 65px #0009}
+#atlasOverlay .atlas-sheet>.row:first-child{gap:12px;align-items:center;margin-bottom:17px}
+#atlasOverlay .atlas-sheet>.row:first-child h3{flex:1;min-width:0;overflow-wrap:anywhere;font-size:16px;margin:0}
+#atlasOverlay .atlas-sheet>.row:first-child button{flex-shrink:0}
+#atlasOverlay .atlas-sheet label{margin:14px 0 7px;color:#c7d3dc;font-weight:650}
+#atlasOverlay .atlas-sheet select,#atlasOverlay .atlas-sheet input{max-width:100%}
+#atlasOverlay .atlas-sheet .atlas-menu{display:grid;gap:9px}
+#atlasOverlay .atlas-sheet .atlas-menu button{width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:left;min-height:51px;padding:13px 15px}
+.atlas-menu-sub{display:block;font-size:11px;font-weight:500;opacity:.7;margin-top:3px}
+.atlas-pair-source{display:grid;gap:4px;padding:12px;background:#243744;border:1px solid #405767;border-radius:11px;margin-bottom:14px}
+.atlas-pair-source small{color:#abc0cc}.atlas-pair-source strong{font-size:15px;overflow-wrap:anywhere}
+.atlas-pair-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#atlasOverlay .atlas-pair-types button{background:#263b47;color:#e0e8ed;border:1px solid #4b5e6b;min-width:0;padding:12px 8px;text-align:left;min-height:76px}
+#atlasOverlay .atlas-pair-types button.chosen{border:2px solid #d6ba85;background:#3b3d38;color:#fff}
+.atlas-pair-types b,.atlas-pair-types small{display:block;overflow-wrap:anywhere}
+.atlas-pair-types b{font-size:13px;line-height:1.35}.atlas-pair-types small{font-size:10px;line-height:1.5;opacity:.78;margin-top:5px}
+.atlas-pair-numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.atlas-pair-empty{background:#27333b;border:1px solid #795d4b;color:#f1c99c;padding:12px;border-radius:9px;font-size:13px;line-height:1.55}
+#atlasOverlay .atlas-pair-submit{width:100%;margin-top:9px}
+@media(max-width:380px){#atlasOverlay .atlas-sheet{padding-left:13px;padding-right:13px}.atlas-pair-types b{font-size:12px}}
 </style></head><body><header><div class="eyebrow">PERSONAL PERFORMANCE SYSTEM</div><h1><span class="gold">ATLAS</span></h1><div class="muted" id="today"></div></header><main id="app"></main><nav class="nav" id="nav"></nav><script src="app.js?v=atlas-20261106-food-dashboard"></script></body></html>
